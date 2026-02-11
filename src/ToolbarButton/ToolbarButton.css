@@ -1,0 +1,48 @@
+/* Generic classes for toolbarButton - including hover state */
+.toolbarButton {
+	transition: border-color 0.2s linear;
+	transition: transform 0.2s ease-in-out;
+	cursor: pointer;
+	margin-bottom: 20px;
+	border: 2px black solid;
+	border-radius: 10px;
+	width: 180px;
+	height: 60px;
+}
+
+.toolbarButton:hover {
+	transform: scale(1.08);
+	border-color: rgb(100, 100, 100);
+}
+
+.green {
+	background-color: rgb(6, 128, 6);
+}
+
+.purple {
+	background-color: rgb(88, 24, 88);
+}
+
+.lightGreen {
+	background-color: rgb(114, 227, 114);
+}
+
+.lightPurple {
+	background-color: rgb(237, 95, 237);
+}
+
+/* Generic class for toolbar text - positioned to be centered on Button*/
+.toolbarText {
+	display: inline-block;
+	position: relative;
+	bottom: 8px;
+	font-size: 16pt;
+	text-shadow: 1px 1px 1px rgb(0, 0, 0);
+}
+
+/* Generic class for toolbar image */
+.toolbarImg {
+	margin-left: 10px;
+	width: 30px;
+	height: 30px;
+}

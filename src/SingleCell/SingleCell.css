@@ -1,0 +1,37 @@
+/* General class defines square shape of cell */
+/* Note - display is set so that each "div" does not demand it's own row */
+.singleCell {
+	display: inline-block;
+	cursor: pointer;
+	border: black 1px solid;
+	width: 75px;
+	height: 75px;
+}
+
+/* General class for the number text on each cell */
+.cellText {
+	font-size: 16pt;
+	text-shadow: 1px 1px 1px rgb(23, 75, 246);
+}
+/* Specialized color classes that signify different cell types */
+.grey {
+	background-color: rgb(186, 186, 186);
+}
+
+.blue {
+	background-color: rgb(112, 162, 247);
+}
+
+.gold {
+	background-color: rgb(243, 191, 38);
+}
+
+/* Specialized class to emphasize the last selected cell */
+.selected {
+	z-index: 3;
+	border: rgb(110, 232, 35) 2px dotted;
+}
+
+.hidden {
+	display: hidden;
+}
