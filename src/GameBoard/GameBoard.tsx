@@ -14,6 +14,7 @@ import downloadImg from "../assets/downloadImg.svg";
 import uploadImg from "../assets/uploadImg.svg";
 import resetImg from "../assets/resetImg.svg";
 import undoImg from "../assets/undoImg.svg";
+import { useTimer } from "../hooks/useTimer";
 
 // GameBoard instance - renders collection of SingleCells
 const GameBoard = () => {
@@ -58,6 +59,14 @@ const GameBoard = () => {
 
 	// Players name - used for logging games
 	const [playerName, setPlayerName] = useState<string>("");
+
+	// Unpack from custom useTimer hook
+	const { currSeconds, resetTimer } = useTimer({
+		duration: 90,
+		onExpiration: () => {
+			console.log("Time's Up!");
+		}
+	});
 
 	// PLACE METHODS HERE
 
@@ -240,7 +249,6 @@ const GameBoard = () => {
 			const completedBoard = deepCopyMatrix(matrix);
 			completedBoard[r][c] = 25;
 			logCompletedLevel(1, completedBoard, score + pointsEarned);
-
 			setActiveLevel(2);
 			setCellPlacementHistory([
 				...cellPlacementHistory,
@@ -255,6 +263,8 @@ const GameBoard = () => {
 			setMatrix((prevMatrix) =>
 				prevMatrix.map((row) => row.map((v) => (v === -1 ? 0 : v)))
 			);
+			// Reset Timer
+			resetTimer();
 			playSuccess();
 			return;
 		}
@@ -322,6 +332,7 @@ const GameBoard = () => {
 				const completedBoard = deepCopyMatrix(matrix);
 				completedBoard[r][c] = 25;
 				logCompletedLevel(2, completedBoard, score);
+				resetTimer();
 				playVictory();
 			} else {
 				playSuccess();
@@ -358,6 +369,7 @@ const GameBoard = () => {
 				const completedBoard = deepCopyMatrix(matrix);
 				completedBoard[r][c] = 25;
 				logCompletedLevel(2, completedBoard, score);
+				resetTimer();
 				playVictory();
 			} else {
 				playSuccess();
@@ -393,6 +405,7 @@ const GameBoard = () => {
 				const completedBoard = deepCopyMatrix(matrix);
 				completedBoard[r][c] = 25;
 				logCompletedLevel(2, completedBoard, score);
+				resetTimer();
 				playVictory();
 			} else {
 				playSuccess();
@@ -541,6 +554,7 @@ const GameBoard = () => {
 				</div>
 				<div className="verticalParent">
 					<p className="helperText">Current Level: {activeLevel}</p>
+					<p className="helperText">Time Remaining: {currSeconds}</p>
 					<p className="helperText">Current Score is: {score}</p>
 					<p className="helperText">
 						Next Number to Place is:{" "}
