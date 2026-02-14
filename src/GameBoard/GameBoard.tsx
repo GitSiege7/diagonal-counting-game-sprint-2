@@ -61,14 +61,17 @@ const GameBoard = () => {
 	const [playerName, setPlayerName] = useState<string>("");
 
 	// Unpack from custom useTimer hook
-	const { currSeconds, resetTimer } = useTimer({
-		duration: 90,
-		onExpiration: () => {
-			console.log("Time's Up!");
-		}
+	const { currSeconds, resetTimer, setCurrSeconds } = useTimer({
+		duration: 30
 	});
 
 	// PLACE METHODS HERE
+
+	// Function for processing timer and score between each level
+	function calculateTimeBonus(): void {
+		setScore((p) => p + currSeconds);
+		resetTimer();
+	}
 
 	//Function to log and save a completed level
 	function logCompletedLevel(
@@ -81,6 +84,7 @@ const GameBoard = () => {
 			playDateTime: new Date().toISOString(),
 			level: completedLevel,
 			rewardsOrPoints: finalScore,
+			currSeconds: currSeconds,
 			completedBoard: completedMatrix.map((row) => [...row]) // Deep copy of matrix
 		};
 
@@ -106,7 +110,8 @@ const GameBoard = () => {
 			activeLevel,
 			score,
 			errorMsg,
-			playerName
+			playerName,
+			currSeconds
 		};
 
 		// JSONify
@@ -156,6 +161,7 @@ const GameBoard = () => {
 					setCellPlacementHistory(parsed.cellPlacementHistory);
 					setActiveLevel(parsed.activeLevel);
 					setScore(parsed.score);
+					setCurrSeconds(parsed.currSeconds);
 					setErrorMsg(parsed.errorMsg);
 					setPlayerName(parsed.playerName);
 				} catch {
@@ -248,6 +254,7 @@ const GameBoard = () => {
 			//Log completed Level 1 before transitioning
 			const completedBoard = deepCopyMatrix(matrix);
 			completedBoard[r][c] = 25;
+			calculateTimeBonus();
 			logCompletedLevel(1, completedBoard, score + pointsEarned);
 			setActiveLevel(2);
 			setCellPlacementHistory([
@@ -263,8 +270,7 @@ const GameBoard = () => {
 			setMatrix((prevMatrix) =>
 				prevMatrix.map((row) => row.map((v) => (v === -1 ? 0 : v)))
 			);
-			// Reset Timer
-			resetTimer();
+
 			playSuccess();
 			return;
 		}
@@ -331,8 +337,8 @@ const GameBoard = () => {
 				//Log Completed Level 2
 				const completedBoard = deepCopyMatrix(matrix);
 				completedBoard[r][c] = 25;
+				calculateTimeBonus();
 				logCompletedLevel(2, completedBoard, score);
-				resetTimer();
 				playVictory();
 			} else {
 				playSuccess();
@@ -368,8 +374,8 @@ const GameBoard = () => {
 				//Log Completed Level 2
 				const completedBoard = deepCopyMatrix(matrix);
 				completedBoard[r][c] = 25;
+				calculateTimeBonus();
 				logCompletedLevel(2, completedBoard, score);
-				resetTimer();
 				playVictory();
 			} else {
 				playSuccess();
@@ -404,8 +410,8 @@ const GameBoard = () => {
 				//Log Completed Level 2
 				const completedBoard = deepCopyMatrix(matrix);
 				completedBoard[r][c] = 25;
+				calculateTimeBonus();
 				logCompletedLevel(2, completedBoard, score);
-				resetTimer();
 				playVictory();
 			} else {
 				playSuccess();
@@ -474,6 +480,7 @@ const GameBoard = () => {
 		setMatrix(newMatrix);
 		setNextToPlace(2);
 		setScore(scoreSaved);
+		resetTimer();
 	}
 
 	// Return Grid of SingleCells, passing corresponding matrix value to each
