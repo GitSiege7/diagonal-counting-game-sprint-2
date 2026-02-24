@@ -35,39 +35,38 @@
 .helperText {
 	display: inline-block;
 	margin: 6px;
+	width: 250px;
 	color: black;
 	font-size: 22px;
 	text-shadow: 1px 1px 1px rgb(251, 251, 150);
 }
-
-/* Specialized class for error text */
 .errorText {
-	margin: 0px;
-	color: rgb(56, 19, 19);
-	font-size: 22px;
-	text-shadow: 1px 1px 1px rgb(251, 251, 150);
+	min-height: 200px;
+	color: black;
+	text-shadow: 1px 1px 1px rgb(227, 14, 14);
 }
+
 .hidden {
 	visibility: hidden;
 }
 
 /* US7: Player Name Input Styles */
 .playerNameLabel {
+	display: flex;
+	align-items: center;
 	color: black;
 	font-size: 22px;
 	text-shadow: 1px 1px 1px rgb(251, 251, 150);
-	display: flex;
-	align-items: center;
 }
 
 .playerNameInput {
-	padding: 8px 12px;
-	border-radius: 8px;
 	border: 2px solid rgb(227, 185, 14);
+	border-radius: 8px;
 	background: rgba(255, 255, 255, 0.85);
+	padding: 8px 12px;
+	width: 220px;
 	color: black;
 	font-size: 18px;
-	width: 220px;
 }
 
 .playerNameInput::placeholder {

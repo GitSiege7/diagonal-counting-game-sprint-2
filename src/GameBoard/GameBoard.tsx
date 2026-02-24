@@ -9,7 +9,7 @@ import {
 	playVictory,
 	deepCopyMatrix
 } from "./helpers";
-import { act, useState } from "react";
+import { useState } from "react";
 import downloadImg from "../assets/downloadImg.svg";
 import uploadImg from "../assets/uploadImg.svg";
 import resetImg from "../assets/resetImg.svg";
@@ -309,15 +309,34 @@ const GameBoard = () => {
 
 		// check validity of placement for non-diagonals, diagonals, and center
 		if (
-			(
-				![[sr, 0], [0, sc], [sr, 6], [6, sc]].some(([a, b]) => a === r && b === c)
-			) && (
-				![[1, 1], [2, 2], [3, 3], [4, 4], [5, 5]].some(([a, b]) => a === sr && b === sc) ||
-				![[0, 0], [6, 6]].some(([a, b]) => a === r && b === c)
-			) && (
-				![[5, 1], [4, 2], [3, 3], [2, 4], [1, 5]].some(([a, b]) => a === sr && b === sc) ||
-				![[6, 0], [0, 6]].some(([a, b]) => a === r && b === c)
-			)
+			![
+				[sr, 0],
+				[0, sc],
+				[sr, 6],
+				[6, sc]
+			].some(([a, b]) => a === r && b === c) &&
+			(![
+				[1, 1],
+				[2, 2],
+				[3, 3],
+				[4, 4],
+				[5, 5]
+			].some(([a, b]) => a === sr && b === sc) ||
+				![
+					[0, 0],
+					[6, 6]
+				].some(([a, b]) => a === r && b === c)) &&
+			(![
+				[5, 1],
+				[4, 2],
+				[3, 3],
+				[2, 4],
+				[1, 5]
+			].some(([a, b]) => a === sr && b === sc) ||
+				![
+					[6, 0],
+					[0, 6]
+				].some(([a, b]) => a === r && b === c))
 		) {
 			// handle incorrect placements
 			handleError("Lvl 2 placements must relate to lvl 1 placements.");
@@ -362,7 +381,11 @@ const GameBoard = () => {
 			setCellPlacementHistory([
 				...cellPlacementHistory,
 				{ number: nextToPlace, location: [r, c], pointsEarned: 1 },
-				{ number: 1, location: cellPlacementHistory[0].location, pointsEarned: 0 }
+				{
+					number: 1,
+					location: cellPlacementHistory[0].location,
+					pointsEarned: 0
+				}
 			]);
 		} else {
 			setCellPlacementHistory([
@@ -390,26 +413,51 @@ const GameBoard = () => {
 
 		// Error on selecting non-adjacent cell
 		if (Math.abs(r - lr) > 1 || Math.abs(c - lc) > 1) {
-			handleError("Cannot place number in non-adjacent cell during level 3.");
+			handleError(
+				"Cannot place number in non-adjacent cell during level 3."
+			);
 			return;
-		}		
+		}
 
 		// get the position in level 2 of the number to be placed in level 3
 		// sr/c = source row/column
-		const sr = cellPlacementHistory.slice(25).find((cell) => cell.number == nextToPlace)?.location[0];
-		const sc = cellPlacementHistory.slice(25).find((cell) => cell.number == nextToPlace)?.location[1];
+		const sr = cellPlacementHistory
+			.slice(25)
+			.find((cell) => cell.number == nextToPlace)?.location[0];
+		const sc = cellPlacementHistory
+			.slice(25)
+			.find((cell) => cell.number == nextToPlace)?.location[1];
 
 		// check validity of placement
 		if (
-			(
-				![[r, 0], [0, c], [r, 6], [6, c]].some(([a, b]) => a === sr && b === sc)
-			) && (
-				![[0, 0], [6, 6]].some(([a, b]) => a === sr && b === sc) ||
-				![[1, 1], [2, 2], [3, 3], [4, 4], [5, 5]].some(([a, b]) => a === r && b === c)
-			) && (
-				![[6, 0], [0, 6]].some(([a, b]) => a === sr && b === sc) ||
-				![[5, 1], [4, 2], [3, 3], [2, 4], [1, 5]].some(([a, b]) => a === r && b === c)
-			)
+			![
+				[r, 0],
+				[0, c],
+				[r, 6],
+				[6, c]
+			].some(([a, b]) => a === sr && b === sc) &&
+			(![
+				[0, 0],
+				[6, 6]
+			].some(([a, b]) => a === sr && b === sc) ||
+				![
+					[1, 1],
+					[2, 2],
+					[3, 3],
+					[4, 4],
+					[5, 5]
+				].some(([a, b]) => a === r && b === c)) &&
+			(![
+				[6, 0],
+				[0, 6]
+			].some(([a, b]) => a === sr && b === sc) ||
+				![
+					[5, 1],
+					[4, 2],
+					[3, 3],
+					[2, 4],
+					[1, 5]
+				].some(([a, b]) => a === r && b === c))
 		) {
 			// handle incorrect placements
 			handleError("Lvl 3 placements must relate to lvl 2 placements.");
@@ -611,7 +659,9 @@ const GameBoard = () => {
 									onClick={
 										activeLevel == 1
 											? processLvl1Move
-											: (activeLevel == 2 ? processLvl2Move : processLvl3Move)
+											: activeLevel == 2
+												? processLvl2Move
+												: processLvl3Move
 									}
 									selected={
 										cellPlacementHistory.length > 0 &&
@@ -637,10 +687,10 @@ const GameBoard = () => {
 						Next Number to Place is:{" "}
 						{nextToPlace == 26 ? "You Win!" : nextToPlace}
 					</p>
+					<p
+						className={`helperText errorText ${errorMsg ? "" : "hidden"}`}>{`Error: ${errorMsg}`}</p>
 				</div>
 			</div>
-			<p
-				className={`errorText ${errorMsg ? "" : "hidden"}`}>{`Error: ${errorMsg}`}</p>
 		</div>
 	);
 };
