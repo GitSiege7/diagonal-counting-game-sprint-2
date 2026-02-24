@@ -14,6 +14,7 @@ import downloadImg from "../assets/downloadImg.svg";
 import uploadImg from "../assets/uploadImg.svg";
 import resetImg from "../assets/resetImg.svg";
 import undoImg from "../assets/undoImg.svg";
+import skipImg from "../assets/skipImg.svg";
 import { useTimer } from "../hooks/useTimer";
 import { useUser, SignOutButton } from "@clerk/clerk-react";
 import signOutImg from "../assets/signOutImg.svg";
@@ -597,22 +598,7 @@ const GameBoard = () => {
 	// Return Grid of SingleCells, passing corresponding matrix value to each
 	return (
 		<div className="verticalParent">
-			{/* Player Name Input */}
 			<div className="horizontalParent">
-				<label className="playerNameLabel" htmlFor="playerName">
-					Player Name:
-				</label>
-				<p className="helperText">{playerName}</p>
-			</div>
-			<div className="horizontalParent">
-				<SignOutButton>
-					<ToolbarButton
-						label="Sign Out"
-						onClick={() => clearBoard()}
-						bgColor="blue"
-						icon={signOutImg}
-					/>
-				</SignOutButton>
 				<ToolbarButton
 					label="Save Game"
 					onClick={() => saveGame()}
@@ -638,11 +624,21 @@ const GameBoard = () => {
 					bgColor="lightPurple"
 					icon={resetImg}
 				/>
+			</div>
+			<div className="horizontalParent">
+				<SignOutButton>
+					<ToolbarButton
+						label="Sign Out"
+						onClick={() => clearBoard()}
+						bgColor="blue"
+						icon={signOutImg}
+					/>
+				</SignOutButton>
 				<ToolbarButton
 					label="Skip Level"
 					onClick={skipLevel}
-					bgColor="lightPurple"
-					icon={resetImg}
+					bgColor="red"
+					icon={skipImg}
 				/>
 			</div>
 			<div className="horizontalParent">
@@ -680,6 +676,7 @@ const GameBoard = () => {
 					)}
 				</div>
 				<div className="verticalParent">
+					<p className="helperText">Player Name: {playerName}</p>
 					<p className="helperText">Current Level: {activeLevel}</p>
 					<p className="helperText">Time Remaining: {currSeconds}</p>
 					<p className="helperText">Current Score is: {score}</p>

@@ -3,7 +3,7 @@
 	transition: border-color 0.2s linear;
 	transition: transform 0.2s ease-in-out;
 	cursor: pointer;
-	margin-bottom: 20px;
+	margin-bottom: 10px;
 	border: 2px black solid;
 	border-radius: 10px;
 	width: 180px;
@@ -31,6 +31,12 @@
 	background-color: rgb(237, 95, 237);
 }
 
+.blue {
+	background-color: rgb(71, 71, 218);
+}
+.red {
+	background-color: rgb(255, 95, 95);
+}
 /* Generic class for toolbar text - positioned to be centered on Button*/
 .toolbarText {
 	display: inline-block;
