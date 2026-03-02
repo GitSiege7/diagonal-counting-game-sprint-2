@@ -183,7 +183,7 @@ const GameBoard = () => {
 			reader.readAsText(file);
 		};
 
-		// Initialize file input diolog
+		// Initialize file input dialog
 		input.click();
 	}
 
@@ -475,7 +475,7 @@ const GameBoard = () => {
 			return;
 		}
 
-		//Prompt player to enter the number
+		// Prompt player to enter the number
 		const enteredNumber = prompt("Enter the number to place:");
 		if (enteredNumber === null || parseInt(enteredNumber) !== nextToPlace) {
 			handleError(`Invalid number entered. Expected ${nextToPlace}.`);
@@ -503,6 +503,239 @@ const GameBoard = () => {
 			playSuccess();
 			setNextToPlace((prev) => prev + 1);
 		}
+	}
+
+	// placement logic for DFS solution search for lvl 2
+	// returns 1 on valid, 0 on invalid
+	function helperLvl2Move(
+		r: number, 
+		c: number, 
+		matrix: any,
+		setMatrix: any,
+		cellPlacementHistory: any,
+		setCellPlacementHistory: any,
+		nextToPlace: any,
+		setNextToPlace: any
+	): number {
+
+		// get the position in level 1 of the number to be placed in level 2
+		// sr/c = source row/column
+		const sr = cellPlacementHistory[nextToPlace - 1].location[0];
+		const sc = cellPlacementHistory[nextToPlace - 1].location[1];
+
+		// check validity of placement for non-diagonals, diagonals, and center
+		if (
+			![
+				[sr, 0],
+				[0, sc],
+				[sr, 6],
+				[6, sc]
+			].some(([a, b]) => a === r && b === c) &&
+			(![
+				[1, 1],
+				[2, 2],
+				[3, 3],
+				[4, 4],
+				[5, 5]
+			].some(([a, b]) => a === sr && b === sc) ||
+				![
+					[0, 0],
+					[6, 6]
+				].some(([a, b]) => a === r && b === c)) &&
+			(![
+				[5, 1],
+				[4, 2],
+				[3, 3],
+				[2, 4],
+				[1, 5]
+			].some(([a, b]) => a === sr && b === sc) ||
+				![
+					[6, 0],
+					[0, 6]
+				].some(([a, b]) => a === r && b === c))
+		) {
+			// handle incorrect placements
+			return 0;
+		}
+
+		// error on trying to place in already filled cell
+		if (matrix[r][c] > 0) {
+			return 0;
+		}
+
+		// If no error blocked placement - update matrix
+		setMatrix((prev) => {
+			prev[r][c] = nextToPlace;
+			return prev;
+		});
+		setCellPlacementHistory([
+			...cellPlacementHistory,
+			{ number: nextToPlace, location: [r, c], pointsEarned: 1 }
+		]);
+		setNextToPlace((prev) => prev + 1);
+		return 1;
+	}
+
+	// placement logic for DFS solution search for lvl 3
+	// returns 1 on valid, 0 on invalid
+	function helperLvl3Move(
+		r: number, 
+		c: number, 
+		matrix: any,
+		setMatrix: any,
+		cellPlacementHistory: any,
+		setCellPlacementHistory: any,
+		nextToPlace: any,
+		setNextToPlace: any
+	): number {
+
+		// Case where "2" through "25" is being placed
+		// Source coordinates of last placed cell
+		const lr =
+			cellPlacementHistory[cellPlacementHistory.length - 1].location[0];
+		const lc =
+			cellPlacementHistory[cellPlacementHistory.length - 1].location[1];
+
+		// Error on selecting non-adjacent cell
+		if (Math.abs(r - lr) > 1 || Math.abs(c - lc) > 1) {
+			return 0;
+		}
+
+		// get the position in level 2 of the number to be placed in level 3
+		// sr/c = source row/column
+		const sr = cellPlacementHistory
+			.slice(25)
+			.find((cell) => cell.number == nextToPlace)?.location[0];
+		const sc = cellPlacementHistory
+			.slice(25)
+			.find((cell) => cell.number == nextToPlace)?.location[1];
+
+		// check validity of placement
+		if (
+			![
+				[r, 0],
+				[0, c],
+				[r, 6],
+				[6, c]
+			].some(([a, b]) => a === sr && b === sc) &&
+			(![
+				[0, 0],
+				[6, 6]
+			].some(([a, b]) => a === sr && b === sc) ||
+				![
+					[1, 1],
+					[2, 2],
+					[3, 3],
+					[4, 4],
+					[5, 5]
+				].some(([a, b]) => a === r && b === c)) &&
+			(![
+				[6, 0],
+				[0, 6]
+			].some(([a, b]) => a === sr && b === sc) ||
+				![
+					[5, 1],
+					[4, 2],
+					[3, 3],
+					[2, 4],
+					[1, 5]
+				].some(([a, b]) => a === r && b === c))
+		) {
+			// handle incorrect placements
+			return 0;
+		}
+
+		// Error on trying to place in already filled cell
+		if (matrix[r][c] > 0) {
+			return 0;
+		}
+
+		// If no error blocked placement - update matrix
+		setMatrix((prev) => {
+			prev[r][c] = nextToPlace;
+			return prev;
+		});
+		setCellPlacementHistory([
+			...cellPlacementHistory,
+			{ number: nextToPlace, location: [r, c], pointsEarned: 1 }
+		]);
+		setNextToPlace((prev) => prev + 1);
+		return 1;
+	}
+
+	// Wrapper function
+	function getSolution() {
+		// Create new matrix to track solution
+		let mtx = deepCopyMatrix(matrix)
+		const lr = cellPlacementHistory[cellPlacementHistory.length - 1].location[0];
+		const lc = cellPlacementHistory[cellPlacementHistory.length - 1].location[1];
+
+		if (activeLevel === 1) {
+			console.table(lvl1DFS(mtx, lr, lc, nextToPlace))
+		}
+		else if (activeLevel === 2) {
+			console.table(lvl2DFS(mtx, lr, lc, nextToPlace))
+		}
+		else {
+			console.table(lvl3DFS())
+		}
+	}
+
+	// Returns matrix with a lvl 1 game solution
+	function lvl1DFS(
+		mtx: number[][],
+		R: number,
+		C: number,
+		nextNum: number
+	): number[][] | null {
+
+		// base case, return successful matrix
+		if (nextNum > 25) {
+			return mtx
+		}
+
+		for (let r = R - 1; r <= R + 1; r++) {
+            for (let c = C - 1; c <= C + 1; c++) {
+				if (r < 1 || r > 5 || c < 1 || c > 5 || (r === R && c === C)) {
+                    continue;
+                }
+
+				if (mtx[r][c] === 0) {
+					mtx[r][c] = nextNum
+
+					const result = lvl1DFS(mtx, r, c, nextNum + 1)
+					if (result !== null) {
+						return result
+					}
+
+					// backtrack
+					mtx[r][c] = 0
+				}
+			}
+		}
+
+		return null
+	}
+
+	// Returns matrix with a lvl 2 game solution
+	function lvl2DFS(
+		mtx: number[][],
+		R: number,
+		C: number,
+		nextNum: number
+	): number[][] | null {
+
+		
+
+		return null
+	}
+
+	// Returns matrix with a lvl 3 game solution
+	function lvl3DFS(
+		//mtx: any
+	): number[][] | null {
+
+		return null
 	}
 
 	// Define function for undoing a cell placement. Deny undos when next to place is 1.
@@ -603,6 +836,11 @@ const GameBoard = () => {
 	return (
 		<div className="verticalParent">
 			<div className="horizontalParent">
+				<ToolbarButton
+					label="Solve"
+					onClick={() => getSolution()}
+					bgColor="lightBlue"
+				/>
 				<ToolbarButton
 					label="Save Game"
 					onClick={() => saveGame()}
