@@ -725,7 +725,11 @@ const GameBoard = () => {
 		nextNum: number
 	): number[][] | null {
 
-		
+		/*
+		in getSolution() call, find the position of number nextToPlace in the inner grid
+		and follow the number trail, placing in any possible squares in a DFS fashion.
+		Backtrack accordingly.
+		*/
 
 		return null
 	}
