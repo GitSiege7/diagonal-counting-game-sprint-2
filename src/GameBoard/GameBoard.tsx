@@ -510,14 +510,20 @@ const GameBoard = () => {
 	function getSolution() {
 		// Create new matrix to track solution
 		let mtx = deepCopyMatrix(matrix)
-		const lr = cellPlacementHistory[cellPlacementHistory.length - 1].location[0];
-		const lc = cellPlacementHistory[cellPlacementHistory.length - 1].location[1];
 
 		if (activeLevel === 1) {
+			// Find last placed num
+			const lr = cellPlacementHistory[cellPlacementHistory.length - 1].location[0]
+			const lc = cellPlacementHistory[cellPlacementHistory.length - 1].location[1]
+
 			console.table(lvl1DFS(mtx, lr, lc, nextToPlace))
 		}
 		else if (activeLevel === 2) {
-			console.table(lvl2DFS(mtx, lr, lc, nextToPlace))
+			// Find last placed num on inner grid
+			const lr = cellPlacementHistory[cellPlacementHistory.length - 24].location[0]
+			const lc = cellPlacementHistory[cellPlacementHistory.length - 24].location[1]
+
+			console.table(lvl2DFS(mtx, lr, lc, nextToPlace, 0))
 		}
 		else {
 			console.table(lvl3DFS())
@@ -532,7 +538,7 @@ const GameBoard = () => {
 		nextNum: number
 	): number[][] | null {
 
-		// base case, return successful matrix
+		// base case, return successful mtx
 		if (nextNum > 25) {
 			return mtx
 		}
@@ -565,14 +571,122 @@ const GameBoard = () => {
 		mtx: number[][],
 		R: number,
 		C: number,
-		nextNum: number
+		nextNum: number,
+		depth: number
 	): number[][] | null {
 
-		/*
-		in getSolution() call, find the position of number nextToPlace in the inner grid
-		and follow the number trail, placing in any possible squares in a DFS fashion.
-		Backtrack accordingly.
-		*/
+		const offset = 23
+
+		// base case, return successful mtx
+		if (nextNum > 25) {
+			return mtx
+		}
+
+		let lr = 0, lc = 0
+
+		// Process center
+		if (R === 3 && C === 3) {
+			for (let [r, c] of [[0, 0], [0, 6], [6, 0], [6, 6]]) {
+				if (mtx[r][c] === 0) {	
+					mtx[r][c] = nextNum
+					
+					if (nextNum !== 25) {
+						// get position of nextNum+1 in inner grid by adding depth
+						lr = cellPlacementHistory[cellPlacementHistory.length - offset + depth].location[0]
+						lc = cellPlacementHistory[cellPlacementHistory.length - offset + depth].location[1]
+					}
+
+					// recursive call
+					const result = lvl2DFS(mtx, lr, lc, nextNum + 1, depth + 1)
+					if (result !== null) {
+						return result
+					}
+
+					// backtrack
+					mtx[r][c] = 0
+				}
+			}
+		}
+
+		// Process diagonals (NW/SE)
+		if ([
+			[1, 1],
+			[2, 2],
+			[4, 4], 
+			[5, 5]
+		].some(([a, b]) => a === R && b === C)) {
+			for (let [r, c] of [[0, 0], [6, 6]]) {
+				if (mtx[r][c] === 0) {	
+					mtx[r][c] = nextNum
+					
+					if (nextNum !== 25) {
+						// get position of nextNum+1 in inner grid by adding depth
+						lr = cellPlacementHistory[cellPlacementHistory.length - offset + depth].location[0]
+						lc = cellPlacementHistory[cellPlacementHistory.length - offset + depth].location[1]
+					}
+
+					// recursive call
+					const result = lvl2DFS(mtx, lr, lc, nextNum + 1, depth + 1)
+					if (result !== null) {
+						return result
+					}
+
+					// backtrack
+					mtx[r][c] = 0
+				}
+			}
+		}
+		// (NE/SW)
+		if ([
+			[5, 1],
+			[4, 2],
+			[2, 4], 
+			[1, 5]
+		].some(([a, b]) => a === R && b === C)) {
+			for (let [r, c] of [[6, 0], [0, 6]]) {
+				if (mtx[r][c] === 0) {	
+					mtx[r][c] = nextNum
+					
+					if (nextNum !== 25) {
+						// get position of nextNum+1 in inner grid by adding depth
+						lr = cellPlacementHistory[cellPlacementHistory.length - offset + depth].location[0]
+						lc = cellPlacementHistory[cellPlacementHistory.length - offset + depth].location[1]
+					}
+
+					// recursive call
+					const result = lvl2DFS(mtx, lr, lc, nextNum + 1, depth + 1)
+					if (result !== null) {
+						return result
+					}
+
+					// backtrack
+					mtx[r][c] = 0
+				}
+			}
+		}
+
+		// Process non-diagonals (N/S/E/W) for every square
+		for (let [r, c] of [[R, 0], [R, 6], [0, C], [6, C]]) {
+			if (mtx[r][c] === 0) {	
+				mtx[r][c] = nextNum
+				
+				if (nextNum !== 25) {
+					// get position of nextNum+1 in inner grid by adding depth
+					lr = cellPlacementHistory[cellPlacementHistory.length - offset + depth].location[0]
+					lc = cellPlacementHistory[cellPlacementHistory.length - offset + depth].location[1]
+				}
+
+				// recursive call
+				const result = lvl2DFS(mtx, lr, lc, nextNum + 1, depth + 1)
+				if (result !== null) {
+					return result
+				}
+
+				// backtrack
+				mtx[r][c] = 0
+			}
+
+		}
 
 		return null
 	}
